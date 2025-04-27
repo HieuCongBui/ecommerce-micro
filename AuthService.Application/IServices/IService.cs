@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuthService.Application.Repositories
+namespace AuthService.Application.IServices
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IService<TEntity> where TEntity : class
     {
         IQueryable<TEntity> Queryable();
         TEntity Find(object Id);
@@ -15,5 +15,9 @@ namespace AuthService.Application.Repositories
         void InsertRange(IEnumerable<TEntity> entities);
         void Update(TEntity entity);
         void Delete(object id);
+        Task<TEntity> FindAsync(object Id);
+        Task<TEntity> FindAsync(CancellationToken cancellationToken, params object[] keyValues);
+        Task<bool> DeleteAsync(object id);
+        Task<bool> DeleteAsync(CancellationToken cancellationToken, params object[] keyValues);
     }
 }
