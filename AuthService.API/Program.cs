@@ -1,5 +1,6 @@
 using AuthService.Application.IServices;
 using AuthService.Application.Repositories;
+using AuthService.Application.Services;
 using AuthService.Application.UnitOfWork;
 using AuthService.Infrastructure;
 using AuthService.Infrastructure.Services;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,7 @@ builder.Services.AddScoped<AuthDbContext>(sc => sc.GetRequiredService<AuthDbCont
 builder.Services.AddScoped(typeof(IRepositoryAsync<>),typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWorkAsync, UnitOfWork>();
 builder.Services.AddScoped<ITokenGenerator,JwtService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["ApllicationSettings:JWT_Secret"]);
 builder.Services.AddAuthentication(options =>

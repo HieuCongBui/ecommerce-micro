@@ -1,34 +1,61 @@
-﻿using AuthService.Application.UnitOfWork;
+﻿using AuthService.Application.Repositories;
+using AuthService.Application.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
+using System.Data;
 
 namespace AuthService.Infrastructure
 {
     public class UnitOfWork : IUnitOfWorkAsync
     {
         private readonly AuthDbContext _context;
-        private DbTransaction _transaction;
-        protected Dictionary<string, dynamic> Repositories;
+        protected DbTransaction _transaction;
+        protected Dictionary<string, dynamic> _repository;
         public UnitOfWork(AuthDbContext context)
         {
             _context = context as AuthDbContext;
-            Repositories = new Dictionary<string, dynamic>();
+            _repository = new Dictionary<string, dynamic>();
         }
         public virtual void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             //throw new NotImplementedException();
+        }
+        public virtual async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        {
+            if (_transaction != null)
+            {
+                throw new InvalidOperationException("Transaction already started. Please commit or rollback the transaction before starting a new one.");
+            }
+            var connection = _context.Database.GetDbConnection();
+            if (connection.State != System.Data.ConnectionState.Open)
+            {
+                await connection.OpenAsync();
+            }
+            _transaction = await connection.BeginTransactionAsync(isolationLevel);
         }
 
         public virtual bool Commit()
         {
             _context.SaveChanges();
             return true;
+        }
+        public virtual async Task CommitAsync()
+        {
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("No transaction started. Please start a transaction before committing.");
+            }
+            try
+            {
+                await _context.SaveChangesAsync();
+                await _transaction.CommitAsync();
+            }
+            finally
+            {
+                await DisposeTransactionAsync();
+            }
         }
 
         public virtual int ExcuteSqlCommand(string sql, params object[] parameters)
@@ -56,7 +83,15 @@ namespace AuthService.Infrastructure
             _transaction.Rollback();
             _context.Dispose();
         }
-
+        public virtual async Task RollbackAsync()
+        {
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("No transaction started. Please start a transaction before rolling back.");
+            }
+            await _transaction.RollbackAsync();
+            await DisposeTransactionAsync();
+        }
         public virtual int SaveChanges()
         {
             return _context.SaveChanges();
@@ -70,6 +105,21 @@ namespace AuthService.Infrastructure
         public virtual Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             return _context.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task DisposeTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
+        public virtual void Dispose()
+        {
+           _transaction?.Dispose();
+           _context?.Dispose();
         }
     }
 }

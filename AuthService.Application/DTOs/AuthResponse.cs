@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AuthService.Application.DTOs
 {
-    public class LoginRequest
+    public class AuthResponse
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string AccesToken { get; set; }
+        public string RefreshToken { get; set; }
+        public int ExpiresIn { get; set; }
     }
 }

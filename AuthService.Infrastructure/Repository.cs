@@ -53,7 +53,7 @@ namespace AuthService.Infrastructure
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public virtual void delete(object id)
+        public virtual void Delete(object id)
         {
             var entity = _dbSet.Find(id);
             _dbSet.Remove(entity);

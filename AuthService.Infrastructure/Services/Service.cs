@@ -1,14 +1,15 @@
 ﻿using AuthService.Application.IServices;
 using AuthService.Application.Repositories;
+using AuthService.Application.UnitOfWork;
 
 namespace AuthService.Infrastructure.Services
 {
     public abstract class Service<TEntity> : IService<TEntity> where TEntity : class
     {
         protected readonly IRepositoryAsync<TEntity> _repository;
-        protected Service(IRepositoryAsync<TEntity> repositor)
+        protected Service(IRepositoryAsync<TEntity> repository)
         {
-            _repository = repositor;
+            _repository = repository;
         }
         public virtual void Delete(object id) => _repository.Delete(id);
 

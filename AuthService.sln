@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.API", "AuthService\AuthService.API.csproj", "{57C9CFEC-6EB4-4A56-AEFB-D941F4FF6479}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.API", "AuthService.API\AuthService.API.csproj", "{57C9CFEC-6EB4-4A56-AEFB-D941F4FF6479}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Domain", "AuthService.Domain\AuthService.Domain.csproj", "{6BD0C7AA-E0FA-4B03-B142-AB099631F570}"
 EndProject
